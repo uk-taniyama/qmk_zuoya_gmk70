@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include "wireless.h"
 
-// #define HS_BT_DEF_PIN                     C14
-// #define HS_2G4_DEF_PIN                    C15
-// #define HS_BT_PIN_STATE                   0, 1
-// #define HS_2G4_PIN_STATE                  1, 0
-// #define HS_USB_PIN_STATE                  1, 1
+#define HS_BT_DEF_PIN                     C14
+#define HS_2G4_DEF_PIN                    C15
+#define HS_BT_PIN_STATE                   0, 1
+#define HS_2G4_PIN_STATE                  1, 0
+#define HS_USB_PIN_STATE                  1, 1
 
 #define HS_GET_MODE_PIN_(pin_bt, pin_2g4) ((((#pin_bt)[0] == 'x') || ((readPin(HS_BT_DEF_PIN) + 0x30) == ((#pin_bt)[0]))) && (((#pin_2g4)[0] == 'x') || ((readPin(HS_2G4_DEF_PIN) + 0x30) == ((#pin_2g4)[0]))))
 #define HS_GET_MODE_PIN(state)            HS_GET_MODE_PIN_(state)

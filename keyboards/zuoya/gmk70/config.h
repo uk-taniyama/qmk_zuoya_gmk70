@@ -5,7 +5,7 @@
 
 #define USB_POWER_EN_PIN                    B1 // USB ENABLE pin
 #define LED_POWER_EN_PIN                    A5 // LED ENABLE pin
-#define LED_POWER_EN2_PIN                    A8 // LED ENABLE pin
+#define LED_POWER_EN2_PIN                   A8 // LED ENABLE pin
 #define HS_BAT_CABLE_PIN                    A7 // USB insertion detection pin
 
 #define BAT_FULL_PIN                        A15
@@ -54,6 +54,18 @@
 #define SERIAL_DRIVER                       SD3
 #define SD1_TX_PIN                          C10
 #define SD1_RX_PIN                          C11
+/*serial usart config for split communication*/
+#define SERIAL_USART_DRIVER SD1
+#define SERIAL_USART_TX_PIN A9
+#define SERIAL_USART_RX_PIN A10
+#define SERIAL_USART_TX_PAL_MODE 7
+#define SERIAL_USART_RX_PAL_MODE 7
+#define SERIAL_USART_CONFIG {115200, 3, 0, 0, 0};
+#define SERIAL_USART_FULL_DUPLEX
+#define SELECT_SOFT_SERIAL_SPEED 1
+#define SERIAL_DEBUG
+
+#define SPLIT_TRANSACTION_IDS_USER USER_SYNC_MMS    //multimode status
 
 /* Encoder */
 #define ENCODER_MAP_KEY_DELAY               1
@@ -66,7 +78,9 @@
 
 /* Flash */
 #define EXTERNAL_FLASH_SPI_SLAVE_SELECT_PIN C12
-#define WEAR_LEVELING_LOGICAL_SIZE          (WEAR_LEVELING_BACKING_SIZE / 2)
+#define WEAR_LEVELING_BACKING_SIZE (8 * 1024)
+#define WEAR_LEVELING_LOGICAL_SIZE (WEAR_LEVELING_BACKING_SIZE / 2)
+#define FEE_PAGE_COUNT (WEAR_LEVELING_BACKING_SIZE / FEE_PAGE_SIZE)
 
 /* RGB Matrix */
 #define RGB_MATRIX_FRAMEBUFFER_EFFECTS
@@ -76,12 +90,6 @@
 #define WS2812_SPI_DRIVER  SPIDM2
 #define WS2812_SPI_DIVISOR 32
 
-/*serial usart config for split communication*/
-#define SERIAL_USART_DRIVER SD1
-#define SERIAL_USART_TX_PIN A9
-#define SERIAL_USART_RX_PIN A10
-#define SERIAL_USART_CONFIG {115200, 3, 0, 0, 0};
-#define SPLIT_HAND_PIN B9
 /* rgb_record */
 #define ENABLE_RGB_MATRIX_RGBR_PLAY
 #define RGBREC_CHANNEL_NUM         4

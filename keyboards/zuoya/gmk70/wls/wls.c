@@ -1,6 +1,7 @@
 #include "wls.h"
 
 static ioline_t col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
+static ioline_t col_pins_r[MATRIX_COLS] = MATRIX_COL_PINS_RIGHT;
 
 bool hs_modeio_detection(bool update, uint8_t *mode, uint8_t lsat_btdev) {
     static uint32_t scan_timer = 0x00;
@@ -77,6 +78,10 @@ uint32_t hs_rgb_blink_get_timer(void) {
 bool hs_rgb_blink_hook() {
     static uint8_t last_status;
 
+    if (!is_keyboard_master())  {
+        return false;
+    }
+    
     if (last_status != *md_getp_state()) {
         last_status = *md_getp_state();
         hs_rgb_blink_set_timer(0x00);
@@ -118,17 +123,21 @@ bool hs_rgb_blink_hook() {
 void lpwr_exti_init_hook(void) {
 
 #ifdef HS_BT_DEF_PIN
-    setPinInputHigh(HS_BT_DEF_PIN);
-    waitInputPinDelay();
-    palEnableLineEvent(HS_BT_DEF_PIN, PAL_EVENT_MODE_BOTH_EDGES);
+    if (is_keyboard_master()) {
+        setPinInputHigh(HS_BT_DEF_PIN);
+        waitInputPinDelay();
+        palEnableLineEvent(HS_BT_DEF_PIN, PAL_EVENT_MODE_BOTH_EDGES);
+    }
 #endif
 
 #ifdef HS_2G4_DEF_PIN
-    setPinInputHigh(HS_2G4_DEF_PIN);
-    waitInputPinDelay();
-    palEnableLineEvent(HS_2G4_DEF_PIN, PAL_EVENT_MODE_BOTH_EDGES);
+    if (is_keyboard_master()) {
+        setPinInputHigh(HS_2G4_DEF_PIN);
+        waitInputPinDelay();
+        palEnableLineEvent(HS_2G4_DEF_PIN, PAL_EVENT_MODE_BOTH_EDGES);
+    }
 #endif
-
+    
     if (lower_sleep) {
 #if DIODE_DIRECTION == ROW2COL
         for (uint8_t i = 0; i < ARRAY_SIZE(col_pins); i++) {
@@ -137,6 +146,15 @@ void lpwr_exti_init_hook(void) {
                 writePinHigh(col_pins[i]);
             }
         }
+
+    #if defined(MATRIX_ROW_PINS_RIGHT) && defined(MATRIX_COL_PINS_RIGHT)
+        for (uint8_t i = 0; i < ARRAY_SIZE(col_pins_r); i++) {
+            if (col_pins_r[i] != NO_PIN) {
+                setPinOutput(col_pins_r[i]);
+                writePinHigh(col_pins_r[i]);
+            }
+        }
+    #endif
 #endif
     }
     setPinInput(HS_BAT_CABLE_PIN);
@@ -170,7 +188,7 @@ void lpwr_stop_hook_pre(void) {
 
     gpio_write_pin_low(LED_POWER_EN_PIN);
     gpio_write_pin_low(A9);
-    gpio_write_pin_low(HS_LED_BOOSTING_PIN);
+    // gpio_write_pin_low(HS_LED_BOOSTING_PIN);
 
     if (lower_sleep) {
         md_send_devctrl(MD_SND_CMD_DEVCTRL_USB);
