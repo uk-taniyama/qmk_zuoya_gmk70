@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # タグ名を決定（push時はそのタグ、手動時は日付）
+      - name: Determine tag name
+        id: tag
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            TAG="date_$(date +'%Y%m%d%H%M%S')"
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build
+        shell: bash
+        run: |
+          chmod +x ./scripts/github-build.sh
+          ./scripts/github-build.sh
+
+      - name: Create Release & Upload dist files
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          files: |
+            dist/**
