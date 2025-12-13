@@ -13,6 +13,8 @@ rsync -a --delete keyboards/zuoya/* qmk_firmware/keyboards/zuoya
 rsync -a --delete keyboards/linker/* qmk_firmware/keyboards/linker
 
 cd qmk_firmware
+# patch docker_cmd.sh's docker image
+sed -i.bak 's|ghcr.io/qmk/qmk_cli[^ ]* |ghcr.io/qmk/qmk_cli@sha256:2dc05fc9f32efebd6b05c2b8676ee548358bc7e151e9dbf4dac6b6eed4513b07 |g' util/docker_cmd.sh
 sh util/docker_build.sh "${kb}:${km}"
 cd ..
 mv qmk_firmware/*.bin .
