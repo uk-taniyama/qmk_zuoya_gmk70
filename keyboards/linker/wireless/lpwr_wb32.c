@@ -55,7 +55,6 @@ void palcallback(void *arg) {
 }
 
 void pal_events_init(void) {
-
     for (uint8_t i = 0; i < 16; i++) {
         _pal_events[i].cb  = palcallback;
         _pal_events[i].arg = (void *)(uint32_t)i;
@@ -66,7 +65,6 @@ void lpwr_exti_init_hook(void) __attribute__((weak));
 void lpwr_exti_init_hook(void) {}
 
 void lpwr_exti_init(void) {
-
     pal_events_init();
 
 #if DIODE_DIRECTION == ROW2COL
@@ -117,7 +115,6 @@ void lpwr_clock_enable_user(void) __attribute__((weak));
 void lpwr_clock_enable_user(void) {}
 
 void lpwr_clock_enable(void) {
-
     __early_init();
 
     rccEnableEXTI();
@@ -152,7 +149,6 @@ void lpwr_clock_enable(void) {
 }
 
 void wb32_stop_mode(void) {
-
     SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
 
     /* Prevent the chip from being unable to enter stop mode due to pending interrupts */
@@ -192,6 +188,5 @@ void wb32_stop_mode(void) {
 }
 
 void mcu_stop_mode(void) {
-
     wb32_stop_mode();
 }

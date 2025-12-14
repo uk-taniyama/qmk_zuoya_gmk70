@@ -8,8 +8,8 @@ typedef struct {
     uint32_t remain_time;
     uint32_t times;
     uint32_t time;
-    uint8_t index;
-    uint8_t flip;
+    uint8_t  index;
+    uint8_t  flip;
     void (*blink_cb)(uint8_t);
     RGB color;
 } blink_rgb_t;

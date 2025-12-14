@@ -9,7 +9,6 @@
 #    include "usb_main.h"
 
 void replaced_hid_send(uint8_t *data, uint8_t length) {
-
     if (length != RAW_EPSIZE) {
         return;
     }

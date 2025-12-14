@@ -11,3 +11,6 @@ clean:
 	sh ./scripts/clean.sh
 
 rebuild: clean build
+
+format:
+	find keyboards -name "*.[ch]" | xargs clang-format -i

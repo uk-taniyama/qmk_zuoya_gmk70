@@ -25,15 +25,15 @@ typedef enum {
     LPWR_MODE_TIMEOUT = 0,
 } lpwr_mode_t;
 
-lpwr_state_t lpwr_get_state(void);
-lpwr_mode_t lpwr_get_mode(void);
-uint32_t lpwr_timestamp_read(void);
-uint32_t lpwr_timeout_value_read(void);
-void lpwr_set_sleep_wakeupcd(lpwr_wakeupcd_t wakeupcd);
+lpwr_state_t    lpwr_get_state(void);
+lpwr_mode_t     lpwr_get_mode(void);
+uint32_t        lpwr_timestamp_read(void);
+uint32_t        lpwr_timeout_value_read(void);
+void            lpwr_set_sleep_wakeupcd(lpwr_wakeupcd_t wakeupcd);
 lpwr_wakeupcd_t lpwr_get_sleep_wakeupcd(void);
-void lpwr_update_timestamp(void);
-void lpwr_set_timeout_manual(bool enable);
-bool lpwr_get_timeout_manual(void);
-void lpwr_set_state(lpwr_state_t state);
-void lpwr_set_mode(lpwr_mode_t mode);
-void lpwr_task(void);
+void            lpwr_update_timestamp(void);
+void            lpwr_set_timeout_manual(bool enable);
+bool            lpwr_get_timeout_manual(void);
+void            lpwr_set_state(lpwr_state_t state);
+void            lpwr_set_mode(lpwr_mode_t mode);
+void            lpwr_task(void);

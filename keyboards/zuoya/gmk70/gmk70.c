@@ -28,12 +28,12 @@ typedef union {
 confinfo_t confinfo;
 
 typedef struct {
-    bool active;
+    bool     active;
     uint32_t timer;
     uint32_t interval;
     uint32_t times;
-    uint8_t index;
-    RGB rgb;
+    uint8_t  index;
+    RGB      rgb;
     void (*blink_cb)(uint8_t);
 } hs_rgb_indicator_t;
 
@@ -47,7 +47,7 @@ enum layers {
 hs_rgb_indicator_t hs_rgb_indicators[HS_RGB_INDICATOR_COUNT];
 hs_rgb_indicator_t hs_rgb_bat[HS_RGB_BAT_COUNT];
 
-void user_sync_mms_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data);
+void user_sync_mms_slave_handler(uint8_t in_buflen, const void *in_data, uint8_t out_buflen, void *out_data);
 void rgb_blink_dir(void);
 void hs_reset_settings(void);
 void rgb_matrix_hs_indicator(void);
@@ -57,31 +57,30 @@ void rgb_matrix_hs_set_remain_time(uint8_t index, uint8_t remain_time);
 #define keymap_is_mac_system() ((get_highest_layer(default_layer_state) == _MBL) || (get_highest_layer(default_layer_state) == _MFL))
 #define keymap_is_base_layer() ((get_highest_layer(default_layer_state) == _BL) || (get_highest_layer(default_layer_state) == _FL))
 
-uint32_t post_init_timer     = 0x00;
-bool inqbat_flag             = false;
-bool mac_status              = false;
-bool charging_state          = false;
-bool bat_full_flag           = false;
-bool enable_bat_indicators   = true;
-uint32_t bat_indicator_cnt   = true;
-static uint32_t ee_clr_timer = 0;
-bool test_white_light_flag = false;
-HSV start_hsv;
-bool no_record_fg;
-bool lower_sleep = false;
-uint8_t pov;
-static bool im_bat_req_charging_flag = false;
-uint8_t buff[]   = {14, 8, 2, 1, 1, 1, 1, 1, 1, 1, 0};
+uint32_t        post_init_timer       = 0x00;
+bool            inqbat_flag           = false;
+bool            mac_status            = false;
+bool            charging_state        = false;
+bool            bat_full_flag         = false;
+bool            enable_bat_indicators = true;
+uint32_t        bat_indicator_cnt     = true;
+static uint32_t ee_clr_timer          = 0;
+bool            test_white_light_flag = false;
+HSV             start_hsv;
+bool            no_record_fg;
+bool            lower_sleep = false;
+uint8_t         pov;
+static bool     im_bat_req_charging_flag = false;
+uint8_t         buff[]                   = {14, 8, 2, 1, 1, 1, 1, 1, 1, 1, 0};
 
 void usart_init(void) {
     uprintf("UART INIT START\n");
-    //palSetLineMode(SERIAL_USART_TX_PIN, PAL_MODE_ALTERNATE(SERIAL_USART_TX_PAL_MODE) | PAL_OUTPUT_TYPE_OPENDRAIN);
+    // palSetLineMode(SERIAL_USART_TX_PIN, PAL_MODE_ALTERNATE(SERIAL_USART_TX_PAL_MODE) | PAL_OUTPUT_TYPE_OPENDRAIN);
     palSetLineMode(SERIAL_USART_TX_PIN, PAL_MODE_ALTERNATE(SERIAL_USART_TX_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST);
     palSetLineMode(SERIAL_USART_RX_PIN, PAL_MODE_ALTERNATE(SERIAL_USART_RX_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST);
 }
 
 void eeconfig_confinfo_update(uint32_t raw) {
-
     eeconfig_update_kb(raw);
 }
 
@@ -96,12 +95,10 @@ typedef struct _slave_to_master_t {
 } slave_to_master_t;
 
 uint32_t eeconfig_confinfo_read(void) {
-
     return eeconfig_read_kb();
 }
 
 void eeconfig_confinfo_default(void) {
-
     confinfo.flag             = true;
     confinfo.record_channel   = 0;
     confinfo.record_last_mode = 0xff;
@@ -120,24 +117,23 @@ void eeconfig_confinfo_default(void) {
 #endif
 }
 
-void master_sync_mms_slave(uint8_t last_mode, uint8_t now_mode, uint8_t reset)
-{
+void master_sync_mms_slave(uint8_t last_mode, uint8_t now_mode, uint8_t reset) {
     master_to_slave_t m2s = {0};
     slave_to_master_t s2m = {0};
-    m2s.cmd = 0x55;
-    m2s.body[0] = last_mode;
-    m2s.body[1] = now_mode;
-    m2s.body[2] = reset;
-    if(transaction_rpc_exec(USER_SYNC_MMS, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-        if (s2m.resp == 0x00);
-            dprintf("Slave Sleep OK1\n");
+    m2s.cmd               = 0x55;
+    m2s.body[0]           = last_mode;
+    m2s.body[1]           = now_mode;
+    m2s.body[2]           = reset;
+    if (transaction_rpc_exec(USER_SYNC_MMS, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
+        if (s2m.resp == 0x00)
+            ;
+        dprintf("Slave Sleep OK1\n");
     } else {
         dprintf("Slave sync failed1!\n");
     }
 }
 
 void eeconfig_confinfo_init(void) {
-
     confinfo.raw = eeconfig_confinfo_read();
     if (!confinfo.raw) {
         eeconfig_confinfo_default();
@@ -145,7 +141,6 @@ void eeconfig_confinfo_init(void) {
 }
 
 void keyboard_post_init_kb(void) {
-
 #ifdef CONSOLE_ENABLE
     debug_enable = true;
     debug_matrix = true;
@@ -184,7 +179,6 @@ void keyboard_post_init_kb(void) {
     setPinInputHigh(BAT_FULL_PIN);
 #endif
 
-
 #ifdef WIRELESS_ENABLE
     wireless_init();
 #    if (!(defined(HS_BT_DEF_PIN) && defined(HS_2G4_DEF_PIN)))
@@ -207,21 +201,18 @@ void keyboard_post_init_kb(void) {
 #ifdef WIRELESS_ENABLE
 
 void usb_power_connect(void) {
-
 #    ifdef USB_POWER_EN_PIN
     gpio_write_pin_low(USB_POWER_EN_PIN);
 #    endif
 }
 
 void usb_power_disconnect(void) {
-
 #    ifdef USB_POWER_EN_PIN
     gpio_write_pin_high(USB_POWER_EN_PIN);
 #    endif
 }
 
 void suspend_power_down_kb(void) {
-
 #    ifdef LED_POWER_EN_PIN
     gpio_write_pin_low(LED_POWER_EN_PIN);
 #    endif
@@ -234,7 +225,6 @@ void suspend_power_down_kb(void) {
 }
 
 void suspend_wakeup_init_kb(void) {
-
 #    ifdef LED_POWER_EN_PIN
     if (rgb_matrix_get_val() != 0) gpio_write_pin_high(LED_POWER_EN_PIN);
 #    endif
@@ -242,7 +232,6 @@ void suspend_wakeup_init_kb(void) {
 #    ifdef LED_POWER_EN2_PIN
     if (rgb_matrix_get_val() != 0) gpio_write_pin_high(LED_POWER_EN2_PIN);
 #    endif
-
 
     wireless_devs_change(wireless_get_current_devs(), wireless_get_current_devs(), false);
     suspend_wakeup_init_user();
@@ -255,7 +244,8 @@ void suspend_wakeup_init_user(void) {
     slave_to_master_t s2m = {0};
     m2s.cmd               = 0xCC;
     if (transaction_rpc_exec(USER_SYNC_MMS, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-        if (s2m.resp == 0x00) {}
+        if (s2m.resp == 0x00) {
+        }
         dprintf("Slave Sleep OK\n");
     } else {
         dprint("Slave sync failed!\n");
@@ -263,21 +253,19 @@ void suspend_wakeup_init_user(void) {
 }
 
 void suspend_power_down_user(void) {
-
     master_to_slave_t m2s = {0};
     slave_to_master_t s2m = {0};
     m2s.cmd               = 0xBB;
     if (transaction_rpc_exec(USER_SYNC_MMS, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-        if (s2m.resp == 0x00) {}
+        if (s2m.resp == 0x00) {
+        }
         dprintf("Slave Sleep OK\n");
     } else {
         dprint("Slave sync failed!\n");
     }
-
 }
 
 bool lpwr_is_allow_timeout_hook(void) {
-
     if (wireless_get_current_devs() == DEVS_USB && is_keyboard_master()) {
         return false;
     }
@@ -292,9 +280,10 @@ bool lpwr_is_allow_presleep_hook(void) {
         master_to_slave_t m2s = {0};
         slave_to_master_t s2m = {0};
         m2s.cmd               = 0xAA;
-        m2s.body[0] = lower_sleep;
+        m2s.body[0]           = lower_sleep;
         if (transaction_rpc_exec(USER_SYNC_MMS, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-            if (s2m.resp == 0x00) {}
+            if (s2m.resp == 0x00) {
+            }
             dprintf("Slave Sleep OK\n");
         } else {
             dprint("Slave sync failed!\n");
@@ -307,7 +296,6 @@ bool lpwr_is_allow_presleep_hook(void) {
     }
 
     if ((wireless_get_current_devs() == DEVS_USB) && (!charging_state)) {
-
         if (USB_DRIVER.state != USB_STOP) {
             usb_power_disconnect();
             usbDisconnectBus(&USBD1);
@@ -318,10 +306,8 @@ bool lpwr_is_allow_presleep_hook(void) {
 }
 
 void wireless_post_task(void) {
-
     // auto switching devs
     if (post_init_timer && timer_elapsed32(post_init_timer) >= 100) {
-
         md_send_devctrl(MD_SND_CMD_DEVCTRL_FW_VERSION);   // get the module fw version.
         md_send_devctrl(MD_SND_CMD_DEVCTRL_SLEEP_BT_EN);  // timeout 30min to sleep in bt mode, enable
         md_send_devctrl(MD_SND_CMD_DEVCTRL_SLEEP_2G4_EN); // timeout 30min to sleep in 2.4g mode, enable
@@ -367,7 +353,6 @@ uint32_t wls_process_long_press(uint32_t trigger_time, void *cb_arg) {
             }
         } break;
         case EE_CLR: {
-
         } break;
         default:
             break;
@@ -377,7 +362,7 @@ uint32_t wls_process_long_press(uint32_t trigger_time, void *cb_arg) {
 }
 
 bool process_record_wls(uint16_t keycode, keyrecord_t *record) {
-    static uint16_t keycode_shadow                     = 0x00;
+    static uint16_t       keycode_shadow               = 0x00;
     static deferred_token wls_process_long_press_token = INVALID_DEFERRED_TOKEN;
 
     keycode_shadow = keycode;
@@ -389,8 +374,7 @@ bool process_record_wls(uint16_t keycode, keyrecord_t *record) {
 #    define WLS_KEYCODE_EXEC(wls_dev)                                                                                          \
         do {                                                                                                                   \
             if (record->event.pressed) {                                                                                       \
-                if (wireless_get_current_devs() != wls_dev)                                                                    \
-                    wireless_devs_change(wireless_get_current_devs(), wls_dev, false);                                         \
+                if (wireless_get_current_devs() != wls_dev) wireless_devs_change(wireless_get_current_devs(), wls_dev, false); \
                 if (wls_process_long_press_token == INVALID_DEFERRED_TOKEN) {                                                  \
                     wls_process_long_press_token = defer_exec(WLS_KEYCODE_PAIR_TIME, wls_process_long_press, &keycode_shadow); \
                 }                                                                                                              \
@@ -443,7 +427,6 @@ bool process_record_wls(uint16_t keycode, keyrecord_t *record) {
 }
 #endif
 
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (test_white_light_flag && record->event.pressed) {
         test_white_light_flag = false;
@@ -484,8 +467,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void im_rgblight_increase(void) {
-    HSV rgb;
-    uint8_t moude;
+    HSV            rgb;
+    uint8_t        moude;
     static uint8_t mode = 0;
 
     moude = rgblight_get_mode();
@@ -560,9 +543,8 @@ void im_rgblight_increase(void) {
 }
 
 uint32_t hs_ct_time;
-RGB rgb_test_open;
-bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
-
+RGB      rgb_test_open;
+bool     process_record_kb(uint16_t keycode, keyrecord_t *record) {
     if (process_record_user(keycode, record) != true) {
         return false;
     }
@@ -577,219 +559,206 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_Z);
-            }
-            else{
+            } else {
                 unregister_code(KC_LCTL);
                 unregister_code(KC_Z);
             }
         } break;
-     case MOR_2: {
+        case MOR_2: {
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_X);
-            }
-            else{
+            } else {
                 unregister_code(KC_LCTL);
                 unregister_code(KC_X);
             }
         } break;
-     case MOR_3: {
+        case MOR_3: {
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_C);
-            }
-            else{
+            } else {
                 unregister_code(KC_LCTL);
                 unregister_code(KC_C);
             }
         } break;
-     case MOR_4: {
+        case MOR_4: {
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_V);
-            }
-            else{
+            } else {
                 unregister_code(KC_LCTL);
                 unregister_code(KC_V);
             }
         } break;
-        case KC_F1:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-                if (record->event.pressed) {
-                    register_code16(KC_MSEL);
-                } else {
-                    unregister_code16(KC_MSEL);
+        case KC_F1: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MSEL);
+                    } else {
+                        unregister_code16(KC_MSEL);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F2:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-                if (record->event.pressed) {
-                    register_code16(KC_VOLD);
-                } else {
-                    unregister_code16(KC_VOLD);
+            return true;
+        } break;
+        case KC_F2: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_VOLD);
+                    } else {
+                        unregister_code16(KC_VOLD);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F3:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-
-                if (record->event.pressed) {
-                    register_code16(KC_VOLU);
-                } else {
-                    unregister_code16(KC_VOLU);
+            return true;
+        } break;
+        case KC_F3: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_VOLU);
+                    } else {
+                        unregister_code16(KC_VOLU);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F4:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-                if (record->event.pressed) {
-                    register_code16(KC_MUTE);
-                } else {
-                    unregister_code16(KC_MUTE);
+            return true;
+        } break;
+        case KC_F4: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MUTE);
+                    } else {
+                        unregister_code16(KC_MUTE);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F5:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-                if (record->event.pressed) {
-                    register_code16(KC_MSTP);
-                } else {
-                    unregister_code16(KC_MSTP);
+            return true;
+        } break;
+        case KC_F5: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MSTP);
+                    } else {
+                        unregister_code16(KC_MSTP);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F6:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-                if (record->event.pressed) {
-                    register_code16(KC_MPRV);
-                } else {
-                    unregister_code16(KC_MPRV);
+            return true;
+        } break;
+        case KC_F6: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MPRV);
+                    } else {
+                        unregister_code16(KC_MPRV);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F7:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-                if (record->event.pressed) {
-                    register_code16(KC_MPLY);
-                } else {
-                    unregister_code16(KC_MPLY);
+            return true;
+        } break;
+        case KC_F7: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MPLY);
+                    } else {
+                        unregister_code16(KC_MPLY);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    } break;
-    case KC_F8:{
-       if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-
-                if (record->event.pressed) {
-                    register_code16(KC_MNXT);
-                } else {
-                    unregister_code16(KC_MNXT);
+            return true;
+        } break;
+        case KC_F8: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MNXT);
+                    } else {
+                        unregister_code16(KC_MNXT);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    } break;
-    case KC_F9:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-
-                if (record->event.pressed) {
-                    register_code16(KC_MAIL);
-                } else {
-                    unregister_code16(KC_MAIL);
+            return true;
+        } break;
+        case KC_F9: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_MAIL);
+                    } else {
+                        unregister_code16(KC_MAIL);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F10:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-
-                if (record->event.pressed) {
-                    register_code16(KC_WHOM);
-                } else {
-                    unregister_code16(KC_WHOM);
+            return true;
+        } break;
+        case KC_F10: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_WHOM);
+                    } else {
+                        unregister_code16(KC_WHOM);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F11:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-
-                if (record->event.pressed) {
-                    register_code16(KC_CALC);
-                } else {
-                    unregister_code16(KC_CALC);
+            return true;
+        } break;
+        case KC_F11: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_CALC);
+                    } else {
+                        unregister_code16(KC_CALC);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
-    case KC_F12:{
-        if(confinfo.filp){
-            if (keymap_is_mac_system()) {
-
-                if (record->event.pressed) {
-                    register_code16(KC_WSCH);
-                } else {
-                    unregister_code16(KC_WSCH);
+            return true;
+        } break;
+        case KC_F12: {
+            if (confinfo.filp) {
+                if (keymap_is_mac_system()) {
+                    if (record->event.pressed) {
+                        register_code16(KC_WSCH);
+                    } else {
+                        unregister_code16(KC_WSCH);
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        return true;
-    }break;
+            return true;
+        } break;
         case KC_1: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F1);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F1);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_BRID);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_BRID);
                     }
                 }
@@ -797,21 +766,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_2: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_2: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F2);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F2);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_BRIU);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_BRIU);
                     }
                 }
@@ -819,22 +785,19 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_3: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_3: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F3);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F3);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_LGUI);
                         register_code(KC_TAB);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_LGUI);
                         unregister_code(KC_TAB);
                     }
@@ -843,23 +806,20 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_4: {
-           if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_4: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F4);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F4);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_LGUI);
                         register_code(KC_E);
-                    }
-                    else{
-                         unregister_code(KC_LGUI);
+                    } else {
+                        unregister_code(KC_LGUI);
                         unregister_code(KC_E);
                     }
                 }
@@ -867,37 +827,32 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_5: {
-           if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_5: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F5);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F5);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         rgb_matrix_decrease_val();
                     }
-
                 }
                 return false;
             }
             return true;
         } break;
-    case KC_6: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_6: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F6);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F6);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         rgb_matrix_increase_val();
                     }
@@ -906,21 +861,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_7: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_7: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F7);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F7);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_MPRV);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_MPRV);
                     }
                 }
@@ -928,21 +880,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_8: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_8: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F8);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F8);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_MPLY);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_MPLY);
                     }
                 }
@@ -950,21 +899,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_9: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_9: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F9);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F9);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_MNXT);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_MNXT);
                     }
                 }
@@ -972,21 +918,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_0: {
-           if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_0: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F10);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F10);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_MUTE);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_MUTE);
                     }
                 }
@@ -994,21 +937,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_MINS: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_MINS: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F11);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F11);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_VOLD);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_VOLD);
                     }
                 }
@@ -1016,21 +956,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         } break;
-    case KC_EQL: {
-            if (confinfo.filp){
-                if (!keymap_is_mac_system()){
+        case KC_EQL: {
+            if (confinfo.filp) {
+                if (!keymap_is_mac_system()) {
                     if (record->event.pressed) {
                         register_code(KC_F12);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_F12);
                     }
-                }
-                else{
+                } else {
                     if (record->event.pressed) {
                         register_code(KC_VOLU);
-                    }
-                    else{
+                    } else {
                         unregister_code(KC_VOLU);
                     }
                 }
@@ -1045,16 +982,13 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
         } break;
-        case KC_BATQ:{
+        case KC_BATQ: {
             if (record->event.pressed) {
-
-                im_bat_req_charging_flag =  true;
-                }
-            else{
-                im_bat_req_charging_flag =  false;
-
+                im_bat_req_charging_flag = true;
+            } else {
+                im_bat_req_charging_flag = false;
             }
-        }break;
+        } break;
         case QK_BOOT: {
             if (record->event.pressed) {
                 dprintf("into boot!!!\r\n");
@@ -1065,7 +999,6 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
         case NK_TOGG: {
             if (rgbrec_is_started()) {
-
                 return false;
             }
             if (record->event.pressed) {
@@ -1074,7 +1007,6 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
         } break;
         case RL_MOD: {
             if (rgbrec_is_started()) {
-
                 return false;
             }
             if (record->event.pressed) {
@@ -1157,14 +1089,14 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
         } break;
 
         case RGB_MOD: {
-            if(record->event.pressed){
+            if (record->event.pressed) {
                 uint8_t mode = rgb_matrix_get_mode();
-                if(mode == 29){
+                if (mode == 29) {
                     rgb_matrix_mode(31);
                     return false;
                 }
             }
-        return true;
+            return true;
 
             return false;
         } break;
@@ -1208,7 +1140,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 }
 
 void housekeeping_task_user(void) { // loop
-    uint8_t hs_now_mode;
+    uint8_t         hs_now_mode;
     static uint32_t hs_current_time;
 
     charging_state = readPin(HS_BAT_CABLE_PIN);
@@ -1224,7 +1156,6 @@ void housekeeping_task_user(void) { // loop
     }
 
     if (!hs_current_time || timer_elapsed32(hs_current_time) > 1000) {
-
         hs_current_time = timer_read32();
         md_send_devctrl(hs_now_mode);
         md_send_devctrl(MD_SND_CMD_DEVCTRL_INQVOL);
@@ -1234,7 +1165,7 @@ void housekeeping_task_user(void) { // loop
         static uint32_t last_sync = 0;
         if (timer_elapsed32(last_sync) > 2000) {
             last_sync = timer_read32();
-            pov = *md_getp_bat();
+            pov       = *md_getp_bat();
             master_sync_mms_slave(wireless_get_current_devs(), wireless_get_current_devs(), pov);
         }
     }
@@ -1243,15 +1174,14 @@ void housekeeping_task_user(void) { // loop
 #ifdef RGB_MATRIX_ENABLE
 
 #    ifdef WIRELESS_ENABLE
-bool wls_rgb_indicator_reset        = false;
+bool     wls_rgb_indicator_reset    = false;
 uint32_t wls_rgb_indicator_timer    = 0x00;
 uint32_t wls_rgb_indicator_interval = 0;
 uint32_t wls_rgb_indicator_times    = 0;
 uint32_t wls_rgb_indicator_index    = 0;
-RGB wls_rgb_indicator_rgb           = {0};
+RGB      wls_rgb_indicator_rgb      = {0};
 
 void rgb_matrix_wls_indicator_set(uint8_t index, RGB rgb, uint32_t interval, uint8_t times) {
-
     wls_rgb_indicator_timer = timer_read32();
 
     wls_rgb_indicator_index    = index;
@@ -1261,7 +1191,6 @@ void rgb_matrix_wls_indicator_set(uint8_t index, RGB rgb, uint32_t interval, uin
 }
 
 void wireless_devs_change_kb(uint8_t old_devs, uint8_t new_devs, bool reset) {
-
     wls_rgb_indicator_reset = reset;
 
     if (confinfo.devs != wireless_get_current_devs()) {
@@ -1319,7 +1248,6 @@ void wireless_devs_change_kb(uint8_t old_devs, uint8_t new_devs, bool reset) {
 }
 
 bool rgb_matrix_wls_indicator_cb(void) {
-
     if (*md_getp_state() != MD_STATE_CONNECTED) {
         wireless_devs_change_kb(wireless_get_current_devs(), wireless_get_current_devs(), wls_rgb_indicator_reset);
         return true;
@@ -1332,9 +1260,7 @@ bool rgb_matrix_wls_indicator_cb(void) {
 }
 
 void rgb_matrix_wls_indicator(void) {
-
     if (wls_rgb_indicator_timer) {
-
         if (timer_elapsed32(wls_rgb_indicator_timer) >= wls_rgb_indicator_interval) {
             wls_rgb_indicator_timer = timer_read32();
 
@@ -1396,11 +1322,11 @@ void rgb_matrix_hs_bat(void) {
         }
     }
 }
-bool temp,im_test_rate_flag;
+bool temp, im_test_rate_flag;
 void bat_indicators(void) {
     static uint32_t battery_process_time = 0;
 
-    if (!is_keyboard_master())  {
+    if (!is_keyboard_master()) {
         return;
     }
 
@@ -1408,11 +1334,9 @@ void bat_indicators(void) {
         battery_process_time = 0;
         if (im_bat_req_charging_flag) rgb_matrix_set_color(HS_MATRIX_BLINK_INDEX_BAT, 0xFF, 0x00, 0x00);
     } else if (charging_state) {
-
         battery_process_time = 0;
         if (im_bat_req_charging_flag) rgb_matrix_set_color(HS_MATRIX_BLINK_INDEX_BAT, 0x00, 0xFF, 0x00);
     } else if (*md_getp_bat() <= BATTERY_CAPACITY_LOW) {
-
         rgb_matrix_hs_bat_set(HS_MATRIX_BLINK_INDEX_BAT, (RGB){0xFF, 0x00, 0x00}, 250, 1);
 
         if (*md_getp_bat() <= BATTERY_CAPACITY_STOP) {
@@ -1443,26 +1367,21 @@ void rgb_blink_dir(void) {
 }
 
 bool hs_reset_settings_user(void) {
-
     rgb_matrix_hs_indicator_set(0xFF, (RGB){0x10, 0x10, 0x10}, 250, 3);
 
     return true;
 }
 
 void nkr_indicators_hook(uint8_t index) {
-
     if ((hs_rgb_indicators[index].rgb.r == 0x6E) && (hs_rgb_indicators[index].rgb.g == 0x00) && (hs_rgb_indicators[index].rgb.b == 0x00)) {
-
         rgb_matrix_hs_indicator_set(0xFF, (RGB){0x6E, 0x00, 0x00}, 250, 1);
 
     } else if ((hs_rgb_indicators[index].rgb.r == 0x00) && (hs_rgb_indicators[index].rgb.g == 0x6E) && (hs_rgb_indicators[index].rgb.b == 0x00)) {
-
         rgb_matrix_hs_indicator_set(0xFF, (RGB){0x00, 0x00, 0x6F}, 250, 1);
     }
 }
 
 void rgb_matrix_hs_indicator_set(uint8_t index, RGB rgb, uint32_t interval, uint8_t times) {
-
     for (int i = 0; i < HS_RGB_INDICATOR_COUNT; i++) {
         if (!hs_rgb_indicators[i].active) {
             hs_rgb_indicators[i].active   = true;
@@ -1482,7 +1401,6 @@ void rgb_matrix_hs_indicator_set(uint8_t index, RGB rgb, uint32_t interval, uint
 }
 
 void rgb_matrix_hs_set_remain_time(uint8_t index, uint8_t remain_time) {
-
     for (int i = 0; i < HS_RGB_INDICATOR_COUNT; i++) {
         if (hs_rgb_indicators[i].index == index) {
             hs_rgb_indicators[i].times  = 0;
@@ -1493,7 +1411,6 @@ void rgb_matrix_hs_set_remain_time(uint8_t index, uint8_t remain_time) {
 }
 
 void rgb_matrix_hs_indicator(void) {
-
     for (int i = 0; i < HS_RGB_INDICATOR_COUNT; i++) {
         if (hs_rgb_indicators[i].active) {
             if (timer_elapsed32(hs_rgb_indicators[i].timer) >= hs_rgb_indicators[i].interval) {
@@ -1506,8 +1423,7 @@ void rgb_matrix_hs_indicator(void) {
                 if (hs_rgb_indicators[i].times <= 0) {
                     hs_rgb_indicators[i].active = false;
                     hs_rgb_indicators[i].timer  = 0x00;
-                    if (hs_rgb_indicators[i].blink_cb != NULL)
-                        hs_rgb_indicators[i].blink_cb(i);
+                    if (hs_rgb_indicators[i].blink_cb != NULL) hs_rgb_indicators[i].blink_cb(i);
                     continue;
                 }
             }
@@ -1530,7 +1446,6 @@ void rgb_matrix_hs_indicator(void) {
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
-
     if (test_white_light_flag) {
         RGB rgb_test_open = hsv_to_rgb((HSV){.h = 0, .s = 0, .v = RGB_MATRIX_VAL_STEP * 5});
         rgb_matrix_set_color_all(rgb_test_open.r, rgb_test_open.g, rgb_test_open.b);
@@ -1539,7 +1454,6 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
     }
 #ifdef RGBLIGHT_ENABLE
     if (rgb_matrix_indicators_advanced_user(led_min, led_max) != true) {
-
         return false;
     }
 #endif
@@ -1549,15 +1463,12 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         ee_clr_timer = 0;
     }
 
-    if (host_keyboard_led_state().caps_lock)
-        rgb_matrix_set_color(HS_RGB_INDEX_CAPS, 0x20, 0x20, 0x20);
+    if (host_keyboard_led_state().caps_lock) rgb_matrix_set_color(HS_RGB_INDEX_CAPS, 0x20, 0x20, 0x20);
 
-    if (!keymap_is_mac_system() && keymap_config.no_gui)
-        rgb_matrix_set_color(HS_RGB_INDEX_WIN_LOCK, 0x20, 0x20, 0x20);
+    if (!keymap_is_mac_system() && keymap_config.no_gui) rgb_matrix_set_color(HS_RGB_INDEX_WIN_LOCK, 0x20, 0x20, 0x20);
 
 #ifdef RGBLIGHT_ENABLE
     if (rgb_matrix_indicators_advanced_rgblight(led_min, led_max) != true) {
-
         return false;
     }
 #endif
@@ -1581,18 +1492,19 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
 #endif
 
     rgb_matrix_hs_indicator();
-    if (confinfo.filp) rgb_matrix_set_color(32,RGB_MATRIX_MAXIMUM_BRIGHTNESS,RGB_MATRIX_MAXIMUM_BRIGHTNESS,RGB_MATRIX_MAXIMUM_BRIGHTNESS);
+    if (confinfo.filp) rgb_matrix_set_color(32, RGB_MATRIX_MAXIMUM_BRIGHTNESS, RGB_MATRIX_MAXIMUM_BRIGHTNESS, RGB_MATRIX_MAXIMUM_BRIGHTNESS);
     query();
     return true;
 }
 
 void hs_reset_settings(void) {
-    if  (is_keyboard_master()){
+    if (is_keyboard_master()) {
         master_to_slave_t m2s = {0};
         slave_to_master_t s2m = {0};
         m2s.cmd               = 0xDD;
         if (transaction_rpc_exec(USER_SYNC_MMS, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-            if (s2m.resp == 0x00) {}
+            if (s2m.resp == 0x00) {
+            }
             dprintf("Slave Sleep OK\n");
         } else {
             dprintf("Slave sync failed!\n");
@@ -1622,7 +1534,6 @@ void hs_reset_settings(void) {
     // #endif
 
     if (hs_reset_settings_user() != true) {
-
         return;
     }
     hs_rgb_blink_set_timer(timer_read32());
@@ -1632,37 +1543,34 @@ void hs_reset_settings(void) {
 void lpwr_wakeup_hook(void) {
     hs_mode_scan(false, confinfo.devs, confinfo.last_btdevs);
 
-    if (rgb_matrix_get_val() != 0){
+    if (rgb_matrix_get_val() != 0) {
         gpio_write_pin_high(LED_POWER_EN_PIN);
         gpio_write_pin_high(LED_POWER_EN2_PIN);
-    }
-    else{
+    } else {
         gpio_write_pin_low(LED_POWER_EN_PIN);
         gpio_write_pin_low(LED_POWER_EN2_PIN);
     }
 }
 
-void user_sync_mms_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data){
-    const master_to_slave_t *m2s = (const master_to_slave_t*)in_data;
-    slave_to_master_t *s2m = (slave_to_master_t*)out_data;
+void user_sync_mms_slave_handler(uint8_t in_buflen, const void *in_data, uint8_t out_buflen, void *out_data) {
+    const master_to_slave_t *m2s = (const master_to_slave_t *)in_data;
+    slave_to_master_t       *s2m = (slave_to_master_t *)out_data;
 
-    switch(m2s->cmd)
-    {
-        case 0x55:  //sync multimode
+    switch (m2s->cmd) {
+        case 0x55: // sync multimode
             wireless_devs_change(m2s->body[0], m2s->body[1], false);
             s2m->resp = 0x00;
-        break;
+            break;
         case 0xAA:
             if (confinfo.devs != DEVS_USB) {
                 palSetLineMode(SERIAL_USART_RX_PIN, PAL_OUTPUT_TYPE_OPENDRAIN);
                 palSetLineMode(SERIAL_USART_TX_PIN, PAL_OUTPUT_TYPE_OPENDRAIN);
             }
-            s2m->resp = 0x00;
+            s2m->resp   = 0x00;
             lower_sleep = m2s->body[0];
             lpwr_set_timeout_manual(true);
             break;
         case 0xBB:
-
             gpio_write_pin_low(A5);
             gpio_write_pin_low(A8);
             s2m->resp = 0x00;
@@ -1675,7 +1583,8 @@ void user_sync_mms_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t
         case 0xDD:
             hs_reset_settings();
             s2m->resp = 0x00;
-        break;
-        default :break;
+            break;
+        default:
+            break;
     }
 }

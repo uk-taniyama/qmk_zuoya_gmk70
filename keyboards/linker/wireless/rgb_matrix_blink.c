@@ -14,7 +14,6 @@
 // };
 
 bool rgb_matrix_blink_set(uint8_t index) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             if (blink_rgbs[i].times < 1) {
@@ -32,7 +31,6 @@ bool rgb_matrix_blink_set(uint8_t index) {
 }
 
 bool rgb_matrix_blink_set_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             blink_rgbs[i].color.r = r;
@@ -46,7 +44,6 @@ bool rgb_matrix_blink_set_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b) 
 }
 
 bool rgb_matrix_blink_set_cb(uint8_t index, void *blink_cb) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             blink_rgbs[i].blink_cb = blink_cb;
@@ -58,7 +55,6 @@ bool rgb_matrix_blink_set_cb(uint8_t index, void *blink_cb) {
 }
 
 bool rgb_matrix_blink_set_interval(uint8_t index, uint32_t interval) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             blink_rgbs[i].interval = interval;
@@ -70,7 +66,6 @@ bool rgb_matrix_blink_set_interval(uint8_t index, uint32_t interval) {
 }
 
 bool rgb_matrix_blink_set_times(uint8_t index, uint32_t times) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             blink_rgbs[i].times = times;
@@ -82,7 +77,6 @@ bool rgb_matrix_blink_set_times(uint8_t index, uint32_t times) {
 }
 
 bool rgb_matrix_blink_set_remain_time(uint8_t index, uint32_t time) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             blink_rgbs[i].remain_time = time;
@@ -94,7 +88,6 @@ bool rgb_matrix_blink_set_remain_time(uint8_t index, uint32_t time) {
 }
 
 bool rgb_matrix_blink_set_interval_times(uint8_t index, uint32_t interval, uint32_t times) {
-
     for (uint8_t i = 0; i < NUM_BLINK_RGBS; i++) {
         if (blink_rgbs[i].index == index) {
             blink_rgbs[i].interval = interval;
@@ -113,7 +106,6 @@ __attribute__((weak)) bool rgb_matrix_blink_user(blink_rgb_t *blink_rgb) {
 }
 
 bool rgb_matrix_blink_task(uint8_t led_min, uint8_t led_max) {
-
     for (uint8_t rgb_index = 0; rgb_index < NUM_BLINK_RGBS; rgb_index++) {
         if (blink_rgbs[rgb_index].remain_time != 0) {
             if ((blink_rgbs[rgb_index].time == 0) || (timer_elapsed32(blink_rgbs[rgb_index].time) >= blink_rgbs[rgb_index].interval)) {
@@ -147,14 +139,9 @@ bool rgb_matrix_blink_task(uint8_t led_min, uint8_t led_max) {
 
             if (blink_rgbs[rgb_index].flip) {
                 if (blink_rgbs[rgb_index].index == 0xFF) {
-                    rgb_matrix_set_color_all(blink_rgbs[rgb_index].color.r,
-                                             blink_rgbs[rgb_index].color.g,
-                                             blink_rgbs[rgb_index].color.b);
+                    rgb_matrix_set_color_all(blink_rgbs[rgb_index].color.r, blink_rgbs[rgb_index].color.g, blink_rgbs[rgb_index].color.b);
                 } else if (blink_rgbs[rgb_index].index < RGB_MATRIX_LED_COUNT) {
-                    rgb_matrix_set_color(blink_rgbs[rgb_index].index,
-                                         blink_rgbs[rgb_index].color.r,
-                                         blink_rgbs[rgb_index].color.g,
-                                         blink_rgbs[rgb_index].color.b);
+                    rgb_matrix_set_color(blink_rgbs[rgb_index].index, blink_rgbs[rgb_index].color.r, blink_rgbs[rgb_index].color.g, blink_rgbs[rgb_index].color.b);
                 }
             } else {
                 if (blink_rgbs[rgb_index].index == 0xFF) {

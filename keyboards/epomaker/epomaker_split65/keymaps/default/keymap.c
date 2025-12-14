@@ -60,4 +60,3 @@ bool is_keyboard_master(void) {
     setPinInput(SPLIT_HAND_PIN);
     return readPin(SPLIT_HAND_PIN);
 }
-

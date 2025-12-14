@@ -9,10 +9,10 @@ typedef enum {
     TRANSPORT_WLS,
 } transport_t;
 
-void wls_transport_enable(bool enable);
-void usb_transport_enable(bool enable);
-void set_transport(transport_t new_transport);
+void        wls_transport_enable(bool enable);
+void        usb_transport_enable(bool enable);
+void        set_transport(transport_t new_transport);
 transport_t get_transport(void);
-void usb_power_connect(void);
-void usb_power_disconnect(void);
-void usb_remote_wakeup(void);
+void        usb_power_connect(void);
+void        usb_power_disconnect(void);
+void        usb_remote_wakeup(void);
