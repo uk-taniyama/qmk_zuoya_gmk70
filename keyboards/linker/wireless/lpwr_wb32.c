@@ -79,7 +79,7 @@ void lpwr_exti_init(void) {
         if (row_pins[i] != NO_PIN) {
             setPinInputHigh(row_pins[i]);
             waitInputPinDelay();
-            palEnableLineEvent(row_pins[i], PAL_EVENT_MODE_BOTH_EDGES);
+            palEnableLineEvent(row_pins[i], PAL_EVENT_MODE_FALLING_EDGE);
         }
     }
 #elif DIODE_DIRECTION == COL2ROW
@@ -94,7 +94,7 @@ void lpwr_exti_init(void) {
         if (col_pins[i] != NO_PIN) {
             setPinInputHigh(col_pins[i]);
             waitInputPinDelay();
-            palEnableLineEvent(col_pins[i], PAL_EVENT_MODE_BOTH_EDGES);
+            palEnableLineEvent(col_pins[i], PAL_EVENT_MODE_FALLING_EDGE);
         }
     }
 #endif
@@ -117,6 +117,46 @@ void lpwr_clock_enable_user(void) {}
 void lpwr_clock_enable(void) {
     __early_init();
 
+    PWR->ANAKEY1 = 0x03;
+    PWR->ANAKEY2 = 0x0C;
+    ANCTL->USBPCR &= ~(ANCTL_USBPCR_DMSTEN | ANCTL_USBPCR_DPSTEN);
+    /* Locks write to ANCTL registers */
+    PWR->ANAKEY1 = 0x00;
+    PWR->ANAKEY2 = 0x00;
+
+    /* Enable SFM clock */
+    RCC->AHBENR1 |= RCC_AHBENR1_CRCSFMEN;
+
+    /* Enable USB peripheral clock */
+    RCC->AHBENR1 |= RCC_AHBENR1_USBEN;
+
+    /* Configure USB FIFO clock source */
+    RCC->USBFIFOCLKSRC = RCC_USBFIFOCLKSRC_USBCLK;
+
+    /* Enable USB FIFO clock */
+    RCC->USBFIFOCLKENR = RCC_USBFIFOCLKENR_CLKEN;
+
+    /* Configure and enable USBCLK */
+#if (WB32_USBPRE == WB32_USBPRE_DIV1P5)
+    RCC->USBCLKENR = RCC_USBCLKENR_CLKEN;
+    RCC->USBPRE    = RCC_USBPRE_SRCEN;
+    RCC->USBPRE |= RCC_USBPRE_RATIO_1_5;
+    RCC->USBPRE |= RCC_USBPRE_DIVEN;
+#elif (WB32_USBPRE == WB32_USBPRE_DIV1)
+    RCC->USBCLKENR = RCC_USBCLKENR_CLKEN;
+    RCC->USBPRE    = RCC_USBPRE_SRCEN;
+    RCC->USBPRE |= 0x00;
+#elif (WB32_USBPRE == WB32_USBPRE_DIV2)
+    RCC->USBCLKENR = RCC_USBCLKENR_CLKEN;
+    RCC->USBPRE    = RCC_USBPRE_SRCEN;
+    RCC->USBPRE |= RCC_USBPRE_RATIO_2;
+    RCC->USBPRE |= RCC_USBPRE_DIVEN;
+#elif (WB32_USBPRE == WB32_USBPRE_DIV3)
+    RCC->USBCLKENR = RCC_USBCLKENR_CLKEN;
+    RCC->USBPRE    = RCC_USBPRE_SRCEN;
+    RCC->USBPRE |= RCC_USBPRE_RATIO_3;
+    RCC->USBPRE |= RCC_USBPRE_DIVEN;
+#endif
     rccEnableEXTI();
 
 #if WB32_SERIAL_USE_UART1

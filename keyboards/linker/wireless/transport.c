@@ -7,13 +7,14 @@
 #include "transport.h"
 
 #ifndef USB_POWER_DOWN_DELAY
-#    define USB_POWER_DOWN_DELAY 3000
+#    define USB_POWER_DOWN_DELAY 7000
 #endif
 
 extern host_driver_t chibios_driver;
 extern host_driver_t wireless_driver;
 
 static transport_t transport = TRANSPORT_USB;
+bool               temp;
 
 void wls_transport_enable(bool enable) __attribute__((weak));
 void wls_transport_enable(bool enable) {
@@ -89,8 +90,8 @@ void set_transport(transport_t new_transport) {
 transport_t get_transport(void) {
     return transport;
 }
-
-void usb_remote_wakeup(void) {
+uint32_t suspend_timer = 0x00;
+void     usb_remote_wakeup(void) {
 #ifdef USB_REMOTE_USE_QMK
     if (USB_DRIVER.state == USB_SUSPENDED) {
         dprintln("suspending keyboard");
@@ -114,13 +115,15 @@ void usb_remote_wakeup(void) {
         /* Woken up */
     }
 #else
-    static uint32_t suspend_timer = 0x00;
 
     if ((USB_DRIVER.state == USB_SUSPENDED)) {
         if (!suspend_timer) suspend_timer = sync_timer_read32();
         if (sync_timer_elapsed32(suspend_timer) >= USB_POWER_DOWN_DELAY) {
             suspend_timer = 0x00;
-            suspend_power_down();
+            extern void lpwr_set_timeout_manual(bool enable);
+            temp = true;
+            // suspend_power_down();
+            lpwr_set_timeout_manual(true);
         }
     } else {
         suspend_timer = 0x00;
