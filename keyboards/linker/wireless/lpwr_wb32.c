@@ -100,9 +100,12 @@ void lpwr_exti_init(void) {
 #endif
 
 #ifndef LPWR_UART_WAKEUP_DISABLE
-    setPinInput(UART_RX_PIN);
-    waitInputPinDelay();
-    palEnableLineEvent(UART_RX_PIN, PAL_EVENT_MODE_BOTH_EDGES);
+    extern bool lower_sleep;
+    if (!lower_sleep) {
+        setPinInput(UART_RX_PIN);
+        waitInputPinDelay();
+        palEnableLineEvent(UART_RX_PIN, PAL_EVENT_MODE_BOTH_EDGES);
+    }
 #endif
 
     lpwr_exti_init_hook();
@@ -179,6 +182,19 @@ void lpwr_clock_enable(void) {
 #endif
 #if WB32_I2C_USE_I2C2
     rccEnableI2C2();
+#endif
+
+#if WB32_GPT_USE_TIM1 || WB32_ICU_USE_TIM1 || WB32_PWM_USE_TIM1
+    rccEnableTIM1();
+#endif
+#if WB32_ST_USE_TIM2 || WB32_GPT_USE_TIM2 || WB32_ICU_USE_TIM2 || WB32_PWM_USE_TIM2
+    rccEnableTIM2();
+#endif
+#if WB32_ST_USE_TIM3 || WB32_GPT_USE_TIM3 || WB32_ICU_USE_TIM3 || WB32_PWM_USE_TIM3
+    rccEnableTIM3();
+#endif
+#if WB32_ST_USE_TIM4 || WB32_GPT_USE_TIM4 || WB32_ICU_USE_TIM4 || WB32_PWM_USE_TIM4
+    rccEnableTIM4();
 #endif
 
 #ifndef LPWR_UART_WAKEUP_DISABLE

@@ -399,8 +399,8 @@ void md_rf_send_carrier(uint8_t channel, uint8_t tx_power, uint8_t phy) {
     sdata[1] = channel;
     sdata[2] = tx_power;
     sdata[3] = phy;
-    // md_calc_check_sum(sdata, sizeof(sdata) - 1);
-    sdata[4] = sdata[0] + sdata[1] - sdata[3];
+    md_calc_check_sum(sdata, sizeof(sdata) - 1);
+    // sdata[4] = sdata[0] + sdata[1] - sdata[3];
     smsg_push(sdata, sizeof(sdata));
 }
 
